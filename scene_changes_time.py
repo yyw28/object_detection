@@ -7,7 +7,7 @@ import moviepy
 from moviepy.editor import *
 from PIL import Image
 
-def detect_scene_changes(video_path, threshold=500000):
+def detect_scene_changes(video_path, frame_location, threshold=500000):
     cap = cv2.VideoCapture(video_path)
     if not cap.isOpened():
         print("Error opening video file")
@@ -33,22 +33,18 @@ def detect_scene_changes(video_path, threshold=500000):
                 scene_changes.append(cap.get(cv2.CAP_PROP_POS_MSEC))
         prev_frame = gray_frame
     cap.release()
-    return scene_changes
 
-# Save the last second frame to output directory
-def save_frame(output_dir_frame):
-  i = 0
-  for timestamp in scene_changes_time:
-    print(timestamp)
-    video_capture = cv2.VideoCapture(video_path)
-    if not video_capture.isOpened():
-      print("Failed to open video capture.")
+    i = 0
+    for timestamp in scene_changes_time:
+        video_capture = cv2.VideoCapture(video_path)
+        if not video_capture.isOpened():
+          print("Failed to open video capture.")
 
-    video_capture.set(cv2.CAP_PROP_POS_MSEC, timestamp)
-    ret, frame = video_capture.read()
+        video_capture.set(cv2.CAP_PROP_POS_MSEC, timestamp)
+        ret, frame = video_capture.read()
 
-    filename = f"frame_{timestamp}"
-    output_dir = output_dir_frame + '/' + str(i) + '.jpg'
-    cv2.imwrite(output_dir, frame)
-    print("Frame saved successfully as", output_dir)
-    i+=1
+        filename = f"frame_{timestamp}"
+        output_dir = frame_location + '/' + str(i) + '.jpg'
+        cv2.imwrite(output_dir, frame)
+        print("Frame saved successfully as", output_dir)
+        i+=1
