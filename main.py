@@ -18,31 +18,31 @@ if __name__ == '__main__':
     parser.add_argument('--emotion_recognition', type=bool, default=True)
 
     args = parser.parse_args()
-    video_parser = detect_scene_changes(args.video_path)
+    video_parser = detect_scene_changes(args.video_path,args.frame_location)
     #video_parser.frame_extraction(args.frame_interval,args.frame_location)
 
     extractor = VisualFeatures()
-    entries = os.listdir(args.frame_location)
+    frames = os.listdir(args.frame_location)
 
     features = {}
 
-    for entry in entries:
-        print("Processing Frame:", entry)
+    for frame in frames:
+        print("Processing Frame:", frame)
         if entry!='video':
-          img = cv2.imread(args.frame_location+'/'+entry)
-          features[entry] = []
+          img = cv2.imread(args.frame_location+'/'+frame)
+          features[frame] = []
           if args.weapons:
               output = extractor.weapon_detection(img)
-              features[entry].append(output)
+              features[frame].append(output)
           if args.ocr:
               output = extractor.text_ocr(img)
-              features[entry].append(output)
+              features[frame].append(output)
           if args.objects:
               output = extractor.object_detection(img)
-              features[entry].append(output)
+              features[frame].append(output)
           if args.emotion_recognition:
               output = extractor.emotion_recognition(img)
-              features[entry].append(output)
+              features[frame].append(output)
     
     # json_object = json.dumps(features, indent = 4) 
     with open(args.save_json, 'w') as f:
