@@ -1,0 +1,21 @@
+import whisper
+import re
+
+def transcribe_audio(audio_path):
+    """Transcribe speech to text using Whisper."""
+    model = whisper.load_model("base")  # Load Whisper model
+    result = model.transcribe(audio_path)
+    return result["text"]
+
+def segment_text(text):
+    """Segment transcript based on punctuation."""
+    return re.split(r'(?<=[.!?])\s+', text)  # Split at punctuation
+
+# Example usage
+audio_file = "your_audio_file.wav"  # Replace with your audio file path
+transcript = transcribe_audio(audio_file)
+segments = segment_text(transcript)
+
+# Print segmented transcript
+for i, segment in enumerate(segments):
+    print(f"Segment {i+1}: {segment}")
