@@ -1,0 +1,44 @@
+
+##### segment speech by pause
+pip install pydub
+
+from pydub import AudioSegment
+from pydub.silence import split_on_silence
+
+def segment_audio_by_pause(audio_path, silence_thresh=-40, min_silence_len=700):
+    """Splits audio based on silence pauses."""
+    audio = AudioSegment.from_wav(audio_path)  # Load audio
+    segments = split_on_silence(audio, min_silence_len=min_silence_len, silence_thresh=silence_thresh)
+
+    for i, segment in enumerate(segments):
+        segment.export(f"segment_{i+1}.wav", format="wav")
+        print(f"Saved: segment_{i+1}.wav")
+
+# Example Usage
+audio_file = "your_audio.wav"  # Replace with your file
+segment_audio_by_pause(audio_file)
+
+
+
+#### segment speaker
+pip install pyannote.audio torch torchvision torchaudio
+
+from pyannote.audio.pipelines.speaker_diarization import SpeakerDiarization
+from pyannote.core import Segment
+import torch
+import wave
+
+# Load the pre-trained speaker diarization model
+pipeline = SpeakerDiarization.from_pretrained("pyannote/speaker-diarization")
+
+def segment_by_speaker(audio_path):
+    """Segments audio by speaker."""
+    diarization = pipeline({"uri": "audio", "audio": audio_path})
+
+    for turn, _, speaker in diarization.itertracks(yield_label=True):
+        print(f"Speaker {speaker}: {turn.start:.2f}s - {turn.end:.2f}s")
+
+# Example Usage
+audio_file = "your_audio.wav"  # Replace with your file
+segment_by_speaker(audio_file)
+
